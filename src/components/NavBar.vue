@@ -36,11 +36,11 @@ onMounted(() => {
 
 <template>
   <nav class="flex items-center justify-between">
-    <RouterLink to="/" class="text-2xl font-semibold"> Jason Morales </RouterLink>
+    <RouterLink to="/" class="text-2xl font-semibold">Jason Morales</RouterLink>
     <div class="flex justify-between items-center dark:bg-gray-700">
-      <a href="#" class="mx-4 text-lg font-medium"> Home </a>
-      <a href="#about" class="mx-4 text-lg font-medium"> About </a>
-      <a href="#projects" class="mx-4 text-lg font-medium"> Projects </a>
+      <a href="#" class="mx-4 text-lg font-medium">Home</a>
+      <a href="#about" class="mx-4 text-lg font-medium">About</a>
+      <a href="#projects" class="mx-4 text-lg font-medium">Projects</a>
 
       <Switch id="themeSwitch" :model-value="isDarkMode" @update:model-value="toggleTheme" />
       <Label for="themeSwitch" class="">
