@@ -23,7 +23,6 @@ import './commands'
 import '@/assets/main.css'
 
 import { mount } from 'cypress/vue'
-
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
 // Alternatively, can be defined in cypress/support/component.d.ts
@@ -37,7 +36,7 @@ declare global {
   }
 }
 
-Cypress.Commands.add('mount', mount)
+// Cypress.Commands.add('mount', mount)
 
 Cypress.Commands.add('mount', (component, options = {}) => {
   // Setup options object
@@ -47,6 +46,7 @@ Cypress.Commands.add('mount', (component, options = {}) => {
   // Add router plugin
   options.global.plugins.push({
     install(app) {
+      // @ts-expect-error - We know the router property isn't part of the type definition
       app.use(options.router)
     },
   })
