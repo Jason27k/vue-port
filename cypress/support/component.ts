@@ -39,5 +39,20 @@ declare global {
 
 Cypress.Commands.add('mount', mount)
 
+Cypress.Commands.add('mount', (component, options = {}) => {
+  // Setup options object
+  options.global = options.global || {}
+  options.global.plugins = options.global.plugins || []
+
+  // Add router plugin
+  options.global.plugins.push({
+    install(app) {
+      app.use(options.router)
+    },
+  })
+
+  return mount(component, options)
+})
+
 // Example use:
 // cy.mount(MyComponent)
