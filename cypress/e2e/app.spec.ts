@@ -1,134 +1,101 @@
 // https://on.cypress.io/api
 
-describe('<App /> Initial Theme State', () => {
-  beforeEach(() => {
-    document.documentElement.className = ''
-  })
-
+describe('<App /> Theme Handling', () => {
   it("should apply 'dark' class to html on load when localStorage theme is 'dark'", () => {
-    cy.visit('/')
-
-    cy.window().then((win) => {
-      win.localStorage.setItem('theme', 'dark')
-      cy.log('Set localStorage: theme=dark')
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.localStorage.setItem('theme', 'dark')
+      },
     })
-
-    cy.reload()
-    cy.log('Reloaded page')
-
-    cy.log('Mounted NavBar component')
     cy.get('html').should('have.class', 'dark')
-    cy.log('Verified <html> has class "dark"')
   })
 
   it("should apply 'dark' class to html on load when localStorage is unset and prefers-color-scheme is dark", () => {
     cy.visit('/', {
       onBeforeLoad(win) {
+        win.localStorage.removeItem('theme')
         cy.stub(win, 'matchMedia').callsFake((query: string) => {
           return {
             matches: query === '(prefers-color-scheme: dark)',
             media: query,
             onchange: null,
-            addEventListener: () => {},
-            removeEventListener: () => {},
-            addListener: () => {},
-            removeListener: () => {},
-            dispatchEvent: () => false,
+            addEventListener: cy.stub(),
+            removeEventListener: cy.stub(),
+            addListener: cy.stub(),
+            removeListener: cy.stub(),
+            dispatchEvent: cy.stub().returns(false),
           }
         })
       },
     })
-
-    cy.window().then((win) => {
-      win.localStorage.removeItem('theme')
-      cy.log('Removed localStorage theme')
-    })
-
-    cy.reload()
-    cy.log('Reloaded page')
-
-    cy.log('Mounted NavBar component')
     cy.get('html').should('have.class', 'dark')
-    cy.log('Verified <html> has class "dark"')
   })
 
   it("should NOT apply 'dark' class to html on load when localStorage theme is set to light", () => {
-    cy.visit('/')
-
-    cy.window().then((win) => {
-      win.localStorage.setItem('theme', 'light')
-      cy.log('Set localStorage: theme=light')
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.localStorage.setItem('theme', 'light')
+      },
     })
-
-    cy.reload()
-    cy.log('Reloaded page')
-
-    cy.log('Mounted NavBar component')
     cy.get('html').should('not.have.class', 'dark')
-    cy.log('Verified <html> does NOT have class "dark"')
   })
 
   it("should NOT apply 'dark' class to html on load when localStorage is unset and prefers-color-scheme is light", () => {
     cy.visit('/', {
       onBeforeLoad(win) {
+        win.localStorage.removeItem('theme')
         cy.stub(win, 'matchMedia').callsFake((query: string) => {
           return {
             matches: query === '(prefers-color-scheme: light)',
             media: query,
             onchange: null,
-            addEventListener: () => {},
-            removeEventListener: () => {},
-            addListener: () => {},
-            removeListener: () => {},
-            dispatchEvent: () => false,
+            addEventListener: cy.stub(),
+            removeEventListener: cy.stub(),
+            addListener: cy.stub(),
+            removeListener: cy.stub(),
+            dispatchEvent: cy.stub().returns(false),
           }
         })
       },
     })
-
-    cy.window().then((win) => {
-      win.localStorage.removeItem('theme')
-      cy.log('Removed localStorage theme')
-    })
-
-    cy.reload()
-    cy.log('Reloaded page')
-
-    cy.log('Mounted NavBar component')
     cy.get('html').should('not.have.class', 'dark')
-    cy.log('Verified <html> does NOT have class "dark"')
   })
 
-  it('should toggle theme on switch click', () => {
-    cy.visit('/')
-
-    cy.window().then((win) => {
-      win.localStorage.setItem('theme', 'light')
-      cy.log('Removed localStorage theme')
+  it('should toggle theme on switch click and update localStorage', () => {
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.localStorage.setItem('theme', 'light')
+      },
     })
 
-    cy.reload()
-    cy.log('Reloaded page')
-
-    cy.log('Mounted NavBar component')
     cy.get('html').should('not.have.class', 'dark')
-    cy.log('Verified <html> does not have class "dark"')
+    cy.window().its('localStorage.theme').should('eq', 'light')
 
     cy.get('[data-cy="theme-switch"]').click()
-    cy.log('Clicked theme toggle')
-
     cy.get('html').should('have.class', 'dark')
-    cy.log('Verified <html> does have class "dark" after click')
-    cy.window().then((win) => {
-      const theme = win.localStorage.getItem('theme')
-      expect(theme).to.equal('dark')
-      cy.log(`Verified localStorage theme is set to ${theme}`)
-    })
+    cy.window().its('localStorage.theme').should('eq', 'dark')
 
     cy.get('[data-cy="theme-switch"]').click()
-    cy.log('Clicked theme toggle again')
+    cy.get('html').should('not.have.class', 'dark')
+    cy.window().its('localStorage.theme').should('eq', 'light')
+  })
+
+  it('should toggle theme on button click and update localStorage', () => {
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.localStorage.setItem('theme', 'light')
+      },
+    })
 
     cy.get('html').should('not.have.class', 'dark')
-    cy.log('Verified <html> does not have class "dark" after click')
+    cy.window().its('localStorage.theme').should('eq', 'light')
+
+    cy.get('[data-cy="theme-button"]').click()
+    cy.get('html').should('have.class', 'dark')
+    cy.window().its('localStorage.theme').should('eq', 'dark')
+
+    cy.get('[data-cy="theme-button"]').click()
+    cy.get('html').should('not.have.class', 'dark')
+    cy.window().its('localStorage.theme').should('eq', 'light')
   })
 })
