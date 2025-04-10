@@ -22,23 +22,26 @@ describe('<App /> Initial Theme State', () => {
   })
 
   it("should apply 'dark' class to html on load when localStorage is unset and prefers-color-scheme is dark", () => {
-    cy.visit('/')
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'matchMedia').callsFake((query: string) => {
+          return {
+            matches: query === '(prefers-color-scheme: dark)',
+            media: query,
+            onchange: null,
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            addListener: () => {},
+            removeListener: () => {},
+            dispatchEvent: () => false,
+          }
+        })
+      },
+    })
 
     cy.window().then((win) => {
       win.localStorage.removeItem('theme')
       cy.log('Removed localStorage theme')
-
-      cy.stub(win, 'matchMedia')
-        .withArgs('(prefers-color-scheme: dark)')
-        .returns({
-          matches: true,
-          media: '(prefers-color-scheme: dark)',
-          addEventListener: () => {},
-          removeEventListener: () => {},
-          dispatchEvent: () => false,
-          onchange: null,
-        })
-      cy.log('Stubbed matchMedia to return dark preference')
     })
 
     cy.reload()
@@ -55,6 +58,37 @@ describe('<App /> Initial Theme State', () => {
     cy.window().then((win) => {
       win.localStorage.setItem('theme', 'light')
       cy.log('Set localStorage: theme=light')
+    })
+
+    cy.reload()
+    cy.log('Reloaded page')
+
+    cy.log('Mounted NavBar component')
+    cy.get('html').should('not.have.class', 'dark')
+    cy.log('Verified <html> does NOT have class "dark"')
+  })
+
+  it("should NOT apply 'dark' class to html on load when localStorage is unset and prefers-color-scheme is light", () => {
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'matchMedia').callsFake((query: string) => {
+          return {
+            matches: query === '(prefers-color-scheme: light)',
+            media: query,
+            onchange: null,
+            addEventListener: () => {},
+            removeEventListener: () => {},
+            addListener: () => {},
+            removeListener: () => {},
+            dispatchEvent: () => false,
+          }
+        })
+      },
+    })
+
+    cy.window().then((win) => {
+      win.localStorage.removeItem('theme')
+      cy.log('Removed localStorage theme')
     })
 
     cy.reload()
