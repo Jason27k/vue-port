@@ -36,23 +36,23 @@ declare global {
   }
 }
 
-// Cypress.Commands.add('mount', mount)
+Cypress.Commands.add('mount', mount)
 
-Cypress.Commands.add('mount', (component, options = {}) => {
-  // Setup options object
-  options.global = options.global || {}
-  options.global.plugins = options.global.plugins || []
+// Cypress.Commands.add('mount', (component, options = {}) => {
+//   // Setup options object
+//   options.global = options.global || {}
+//   options.global.plugins = options.global.plugins || []
 
-  // Add router plugin
-  options.global.plugins.push({
-    install(app) {
-      // @ts-expect-error - We know the router property isn't part of the type definition
-      app.use(options.router)
-    },
-  })
+//   // Add router plugin
+//   options.global.plugins.push({
+//     install(app) {
+//       // @ts-expect-error - We know the router property isn't part of the type definition
+//       app.use(options.router)
+//     },
+//   })
 
-  return mount(component, options)
-})
+//   return mount(component, options)
+// })
 
 // Example use:
 // cy.mount(MyComponent)
